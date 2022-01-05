@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFBot_Lexicon_Generator", "WFBot_Lexicon\WFBot_Lexicon_Generator.csproj", "{8C441C28-2D17-499A-8817-BBC2D0F0260F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C441C28-2D17-499A-8817-BBC2D0F0260F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C441C28-2D17-499A-8817-BBC2D0F0260F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C441C28-2D17-499A-8817-BBC2D0F0260F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C441C28-2D17-499A-8817-BBC2D0F0260F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EE2A2199-2898-4CD6-9B07-6F8C8D3365D3}
+	EndGlobalSection
+EndGlobal
