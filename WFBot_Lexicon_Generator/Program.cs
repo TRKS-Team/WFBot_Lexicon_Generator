@@ -150,7 +150,7 @@ namespace WFBot_Lexicon
                 var sale = new Sale { Code = itemzh.UrlName, Component = "", En = itemen.ItemName, Id = i + 1, Main = main, MarketId = itemzh.Id, Thumb = itemzh.Thumb, Zh = itemzh.ItemName };
                 result.Add(sale);
             }
-            File.WriteAllText("WF_Sale.json", JsonConvert.SerializeObject(result));
+            File.WriteAllText("WFBot_Sale.json", JsonConvert.SerializeObject(result));
         }
     }
 }
