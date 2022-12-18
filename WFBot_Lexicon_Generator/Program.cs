@@ -3,80 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using Newtonsoft.Json;
+using WFBot_Lexicon_Generator;
 
 namespace WFBot_Lexicon
 {
-    public partial class Sale
-    {
-        private sealed class MarketIdEqualityComparer : IEqualityComparer<Sale>
-        {
-            public bool Equals(Sale x, Sale y)
-            {
-                if (ReferenceEquals(x, y)) return true;
-                if (ReferenceEquals(x, null)) return false;
-                if (ReferenceEquals(y, null)) return false;
-                if (x.GetType() != y.GetType()) return false;
-                return x.MarketId == y.MarketId;
-            }
-
-            public int GetHashCode(Sale obj)
-            {
-                return (obj.MarketId != null ? obj.MarketId.GetHashCode() : 0);
-            }
-        }
-
-        public static IEqualityComparer<Sale> MarketIdComparer { get; } = new MarketIdEqualityComparer();
-
-        [JsonProperty("marketId")]
-        public string MarketId { get; set; }
-
-        [JsonProperty("id")]
-        public long Id { get; set; }
-
-        [JsonProperty("code")]
-        public string Code { get; set; }
-
-        [JsonProperty("main")]
-        public string Main { get; set; }
-
-        [JsonProperty("component")]
-        public string Component { get; set; }
-
-        [JsonProperty("zh")]
-        public string Zh { get; set; }
-
-        [JsonProperty("en")]
-        public string En { get; set; }
-
-        [JsonProperty("thumb")]
-        public string Thumb { get; set; }
-    }
-    public partial class WmItem
-    {
-        [JsonProperty("payload")]
-        public Payload Payload { get; set; }
-    }
-    public partial class Payload
-    {
-        [JsonProperty("items")]
-        public List<Item> Items { get; set; }
-    }
-
-    public partial class Item
-    {
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
-        [JsonProperty("item_name")]
-        public string ItemName { get; set; }
-
-        [JsonProperty("url_name")]
-        public string UrlName { get; set; }
-
-        [JsonProperty("thumb")]
-        public string Thumb { get; set; }
-    }
     public static class JsonExtensions
     {
 
@@ -110,6 +42,12 @@ namespace WFBot_Lexicon
         static void Main(string[] args)
         {
             var lexicon = new WFBot_Lexicon();
+
+            if (args.Contains("dict"))
+            {
+                lexicon.GenerateWFDict();
+            }
+
             lexicon.GenerateWFSales();
         }
     }
@@ -121,6 +59,36 @@ namespace WFBot_Lexicon
             var wc = new WebClient();
             wc.Headers.Add(header.Key, header.Value);
             return wc.DownloadString(url).JsonDeserialize<T>();
+        }
+
+        public void GenerateWFDict()
+        {
+            var hc = new HttpClient();
+            var query = hc.GetStringAsync(
+                    "https://warframe.huijiwiki.com/api.php?action=query&format=json&prop=revisions&titles=Data%3AUserDict.json&formatversion=2&rvprop=content&rvlimit=1")
+                .Result.JsonDeserialize<UserDictQuery>();
+            var content = query.Query.Pages.First().Revisions.First().Content.JsonDeserialize<Content>();
+            var dict = hc
+                .GetStringAsync("https://wfbot.kraber.top:8888/Resources/Richasy/WFA_Lexicon%40WFA5/WF_Dict.json")
+                .Result.JsonDeserialize<List<Dict>>();
+            var diff = dict.Where(d => !content.Text.Values.Select(t => t.ToLower()).Contains(d.Zh.ToLower()) && !content.Category.Values.Select(t => t.ToLower()).Contains(d.Zh.ToLower()));
+            var result = new List<Dict>();
+            result = result.Concat(diff).ToList();
+            foreach (var key in content.Category.Keys)
+            {
+                result.Add(new Dict{ En = key, Zh = content.Category[key]});
+            }
+
+            foreach (var key in content.Text.Keys)
+            {
+                result.Add(new Dict{ En = key, Zh = content.Text[key]});
+            }
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                result[i].Id = i;
+            }
+            File.WriteAllText("WFBot_Dict.json", JsonConvert.SerializeObject(result));
         }
         public void GenerateWFSales()
         {
